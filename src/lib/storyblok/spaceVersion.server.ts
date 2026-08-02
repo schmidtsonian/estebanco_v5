@@ -1,5 +1,6 @@
 import { PUBLIC_STORYBLOK_ACCESS_TOKEN } from '$env/static/public';
 import { PUBLIC_ENV_HOST } from '$env/static/public';
+import { DEV } from 'esm-env';
 
 import { storyblokAPI } from '$lib/storyblok/api';
 
@@ -46,7 +47,7 @@ const fetchSpaceFromApi = async (): Promise<StoryblokSpace | null> => {
 		const { data } = await storyblokAPI.get('cdn/spaces/me', {});
 		return parseSpace(data);
 	} catch (e) {
-		if (import.meta.env.DEV) {
+		if (DEV) {
 			console.warn('[storyblok] fetchStoryblokSpace', e);
 		}
 		return null;

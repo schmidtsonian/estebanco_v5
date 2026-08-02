@@ -28,7 +28,8 @@
 		"vite-plugin-mkcert": "^2.1.0"
 	},
 	"peerDependencies": {
-		"svelte": "^5.0.0"
+		"svelte": "^5.0.0",
+		"@sveltejs/kit": "^2.0.0"
 	},
 	"exports": {
 		".": {
@@ -63,5 +64,8 @@
 	],
 	"svelte": "./dist/index.js",
 	"type": "module",
-	"types": "./dist/index.d.ts"
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"esm-env": "^1.2.2"
+	}
 }
