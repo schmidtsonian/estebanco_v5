@@ -1,0 +1,44 @@
+@use "$lib/assets/styles/mixins" as *;
+@use "$lib/assets/styles/functions" as *;
+@use "$lib/assets/styles/scss-vars" as *;
+
+.h-h1,
+.h-h2,
+.h-h3,
+.h-h4,
+.h-h5,
+.h-h6 {
+  font-family: var(--font-family-headlines);
+  line-height: 1.2;
+}
+
+.h-h1 {
+  font-size: var(--font-size-h1);
+}
+
+.h-h2 {
+  font-size: var(--font-size-h2);
+}
+
+.h-h3 {
+  font-size: var(--font-size-h3);
+}
+
+.h-h4 {
+  font-size: var(--font-size-h4);
+}
+
+.h-h5 {
+  font-size: var(--font-size-h5);
+}
+
+.h-h6 {
+  font-size: var(--font-size-h6);
+}
+
+.h-strong {
+  font-variation-settings: var(--fvs-base-thin);
+  font-feature-settings: var(--ffs-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-h3);
+}

@@ -1,0 +1,221 @@
+[
+  {
+    "name": "image",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-01T18:31:05.164Z",
+    "updated_at": "2026-08-02T13:29:44.256Z",
+    "id": 204470129316433,
+    "schema": {
+      "asset": {
+        "type": "asset",
+        "pos": 0,
+        "display_name": "Asset",
+        "id": "_CRDZYsJSaqZzZy3ynB73A",
+        "required": true,
+        "filetypes": [
+          "images"
+        ]
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "image",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "page",
+    "display_name": null,
+    "description": null,
+    "created_at": "2026-08-01T17:11:35.724Z",
+    "updated_at": "2026-08-01T17:11:35.724Z",
+    "id": 204450593690126,
+    "schema": {
+      "body": {
+        "type": "bloks",
+        "id": "55wMQHmcTiObaJJvGfzrsA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": true,
+    "preview_tmpl": null,
+    "is_nestable": false,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "page",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "settings",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-01T18:28:56.963Z",
+    "updated_at": "2026-08-02T13:29:44.322Z",
+    "id": 204469604201036,
+    "schema": {
+      "images": {
+        "type": "bloks",
+        "pos": 0,
+        "id": "4Ek7cghFSxibyq6KxE85Xg",
+        "minimum": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "image"
+        ],
+        "component_denylist": []
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": true,
+    "preview_tmpl": null,
+    "is_nestable": false,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "settings",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "video",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-02T16:28:54.891Z",
+    "updated_at": "2026-08-02T16:29:31.992Z",
+    "id": 204793998920020,
+    "schema": {
+      "asset": {
+        "type": "asset",
+        "pos": 0,
+        "required": true,
+        "filetypes": [
+          "videos"
+        ],
+        "id": "NYay-Q6bS96S8WqoVT1bZw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "video",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "work",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-02T13:26:17.139Z",
+    "updated_at": "2026-08-02T13:29:31.354Z",
+    "id": 204749115967173,
+    "schema": {
+      "works": {
+        "type": "bloks",
+        "pos": 0,
+        "id": "f6m7aHjKQx-cAediacfwCw",
+        "required": true,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "work_detail"
+        ],
+        "component_denylist": []
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": true,
+    "preview_tmpl": null,
+    "is_nestable": false,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "work",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "work_detail",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-02T13:28:01.078Z",
+    "updated_at": "2026-08-02T16:37:26.275Z",
+    "id": 204749541701318,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "fjLFut9BSCyuygopBuKYgA"
+      },
+      "description": {
+        "type": "text",
+        "pos": 1,
+        "id": "mCK6zgjiRXazDGyK_7uJiQ"
+      },
+      "assets": {
+        "type": "bloks",
+        "pos": 2,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "image",
+          "video"
+        ],
+        "component_denylist": [],
+        "id": "9S-51WjAQiqRcIP8I4Lkbw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "work_detail",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  }
+]

@@ -1,0 +1,67 @@
+{
+	"name": "estebanco-v5",
+	"version": "0.0.1",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@storyblok/svelte": "^7.2.3",
+		"@sveltejs/adapter-node": "^5.5.4",
+		"@sveltejs/kit": "^2.63.0",
+		"@sveltejs/package": "^2.5.8",
+		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@types/node": "^22",
+		"@unpic/svelte": "^1.0.1",
+		"animejs": "^4.5.0",
+		"eslint": "^10.4.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.19.0",
+		"globals": "^17.6.0",
+		"lenis": "^1.3.25",
+		"prettier": "^3.8.3",
+		"prettier-plugin-svelte": "^4.1.0",
+		"publint": "^0.3.21",
+		"sass-embedded": "^1.100.0",
+		"svelte": "^5.56.1",
+		"svelte-check": "^4.6.0",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.60.1",
+		"vite": "^8.0.16",
+		"vite-plugin-mkcert": "^2.1.0"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"keywords": [
+		"svelte"
+	],
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build && npm run prepack",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"prepack": "svelte-kit sync && svelte-package && publint",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
+		"pull-sb-components": "storyblok components pull --verbose --space 294253138812576",
+		"generate-sb-components": "storyblok types generate --verbose --space 294253138812576 --compiler-options ./compiler-options.cjs",
+		"pull-and-generate-sb-components": "bun run pull-sb-components && bun run generate-sb-components"
+	},
+	"sideEffects": [
+		"**/*.css"
+	],
+	"svelte": "./dist/index.js",
+	"type": "module",
+	"types": "./dist/index.d.ts"
+}

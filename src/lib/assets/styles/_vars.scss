@@ -1,0 +1,78 @@
+@use "functions" as *;
+@use "scss-vars" as *;
+
+:root {
+  // breakpoints
+  --break-point-xs: #{strip-unit($break-point-xs)};
+  --break-point-s: #{strip-unit($break-point-s)};
+  --break-point-m: #{strip-unit($break-point-m)};
+  --break-point-l: #{strip-unit($break-point-l)};
+  --break-point-xl: #{strip-unit($break-point-xl)};
+
+  // dimensions
+  --container-max-width: #{px-to-rem(1920)};
+  --grid-gap: #{clamp-fluid(10, 40)};
+  --grid-margin: #{clamp-fluid(15, 100)};
+  --grid-columns: 12;
+
+  --fluid-min: 480;
+  --fluid-max: 1825;
+
+  // spacings
+  --spacing-xxsmall: #{px-to-rem(8)};
+  --spacing-xsmall: #{px-to-rem(16)};
+  --spacing-small: #{px-to-rem(32)};
+  --spacing-medium: #{px-to-rem(64)};
+  --spacing-mediumlarge: #{px-to-rem(96)};
+  --spacing-large: #{clamp-fluid(96, 128)};
+  --spacing-xlarge: #{clamp-fluid(192, 256)};
+
+  // fonts
+  --font-family-base: "DM Sans", sans-serif;
+  --font-family-headlines: "Krona One", sans-serif;
+
+  --fvs-base-light: "opsz" 9, "wght" 400;
+  --fvs-base-thin: "opsz" 28.0992, "wght" 100;
+  --ffs-base: "ss02";
+
+  // font-sizes
+  --font-size-h6: #{px-to-rem(16)};
+  --font-size-h5: #{clamp-fluid(20, 24)};
+  --font-size-h4: #{clamp-fluid(24, 32)};
+  --font-size-h3: #{clamp-fluid(28, 40)};
+  --font-size-h2: #{clamp-fluid(32, 48)};
+  --font-size-h1: #{clamp-fluid(24, 145)};
+
+  // font-weights
+  --font-weight-thin: 100;
+  --font-weight-hairline: var(--font-weight-thin);
+  --font-weight-xlight: 200;
+  --font-weight-ultralight: var(--font-weight-xlight);
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-regular: var(--font-weight-normal);
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-demibold: var(--font-weight-semibold);
+  --font-weight-bold: 700;
+  --font-weight-xbold: 800;
+  --font-weight-ultrabold: var(--font-weight-xbold);
+  --font-weight-black: 900;
+  --font-weight-heavy: var(--font-weight-black);
+  --font-weight-xblack: 950;
+  --font-weight-ultrablack: var(--font-weight-xblack);
+
+  // colors
+  --color-white: #fff;
+  --color-dark: #333333;
+  --color-light: #f7eddd;
+
+  // animations
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-custom-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out-custom: cubic-bezier(0.7, 0, 0.2, 1);
+
+  // z-index
+  --z-index-splash: 9000;
+  --z-index-cursor: 9001;
+}

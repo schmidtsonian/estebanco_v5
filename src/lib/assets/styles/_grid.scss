@@ -1,0 +1,85 @@
+@use "mixins" as *;
+@use "scss-vars" as *;
+
+.container {
+  max-width: var(--container-max-width);
+  padding-inline: var(--grid-margin);
+  margin-inline: auto;
+}
+
+.grid {
+  display: grid;
+  column-gap: var(--grid-gap);
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+
+  &.row-gap {
+    row-gap: var(--grid-gap);
+  }
+}
+
+.column {
+  --xxs: var(--grid-columns);
+  --xs: var(--xxs);
+  --s: var(--xs);
+  --m: var(--s);
+  --l: var(--m);
+  --xl: var(--l);
+  --xxl: var(--xl);
+  --xxxl: var(--xxl);
+
+  --start: inherit;
+  --xxs-start: var(--start);
+  --xs-start: var(--xxs-start);
+  --s-start: var(--xs-start);
+  --m-start: var(--s-start);
+  --l-start: var(--m-start);
+  --xl-start: var(--l-start);
+  --xxl-start: var(--xl-start);
+  --xxxl-start: var(--xxl-start);
+
+  grid-column: auto / span var(--xxs);
+  grid-column-start: var(--start);
+}
+
+@include responsive-width($break-point-xxs) {
+  .column {
+    grid-column: auto / span var(--xxs);
+    grid-column-start: var(--xxs-start);
+  }
+}
+@include responsive-width($break-point-xs) {
+  .column {
+    grid-column: auto / span var(--xs);
+    grid-column-start: var(--xs-start);
+  }
+}
+@include responsive-width($break-point-s) {
+  .column {
+    grid-column: auto / span var(--s);
+    grid-column-start: var(--s-start);
+  }
+}
+@include responsive-width($break-point-m) {
+  .column {
+    grid-column: auto / span var(--m);
+    grid-column-start: var(--m-start);
+  }
+}
+@include responsive-width($break-point-l) {
+  .column {
+    grid-column: auto / span var(--l);
+    grid-column-start: var(--l-start);
+  }
+}
+@include responsive-width($break-point-xl) {
+  .column {
+    grid-column: auto / span var(--xl);
+    grid-column-start: var(--xl-start);
+  }
+}
+@include responsive-width($break-point-xxl) {
+  .column {
+    grid-column: auto / span var(--xxl);
+    grid-column-start: var(--xxl-start);
+  }
+}

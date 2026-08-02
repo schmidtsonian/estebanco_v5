@@ -1,0 +1,51 @@
+@use "$lib/assets/styles/mixins" as *;
+@use "$lib/assets/styles/functions" as *;
+@use "$lib/assets/styles/scss-vars" as *;
+
+@media (prefers-reduced-motion: no-preference) {
+  .h-inview {
+    .h-inview__from-bottom {
+      opacity: 0.001;
+      transform: translateY(px-to-rem(100));
+      transition-property: transform, opacity;
+      transition-delay: var(--inview-delay, 0.05s);
+      transition-duration: var(--inview-duration, 1.45s);
+      transition-timing-function: var(--ease-custom-in-out);
+    }
+
+    .h-inview__from-bottom--sm {
+      transform: translateY(px-to-rem(25));
+    }
+
+    .h-inview__scaled-up {
+      transform: scale(1.1);
+      transition-property: transform;
+      transition-duration: 1.45s;
+      transition-timing-function: var(--ease-custom-in-out);
+    }
+
+    .h-inview__from-left {
+      opacity: 0.001;
+      transform: translateX(-100%);
+      transition-property: transform, opacity;
+      transition-duration: 1.45s, 0.15s;
+      transition-timing-function: var(--ease-custom-in-out);
+    }
+
+    &.is-inview {
+      .h-inview__from-bottom {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .h-inview__scaled-up {
+        transform: scale(1);
+      }
+
+      .h-inview__from-left {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+}

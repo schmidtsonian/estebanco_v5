@@ -1,0 +1,27 @@
+@use "$lib/assets/styles/mixins" as *;
+@use "$lib/assets/styles/functions" as *;
+@use "$lib/assets/styles/scss-vars" as *;
+
+.h-text-align-center {
+  text-align: center;
+}
+
+.h-text-align-left {
+  text-align: left;
+}
+
+.h-text-align-center {
+  text-align: center;
+}
+
+@include has-hover {
+  .h-hover:hover {
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .h-hover {
+      transition: opacity 0.45s var(--ease-custom-in-out);
+    }
+  }
+}

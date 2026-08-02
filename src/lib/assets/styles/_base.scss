@@ -1,0 +1,73 @@
+@use "$lib/assets/styles/mixins" as *;
+@use "$lib/assets/styles/functions" as *;
+@use "$lib/assets/styles/scss-vars" as *;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+* {
+  -webkit-hyphenate-character: "-";
+  hyphenate-character: "-";
+}
+
+html,
+body {
+  width: 100vw;
+  min-height: 100%;
+}
+
+html {
+  box-sizing: border-box;
+  hyphens: auto;
+}
+
+body.is-menu-open {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-variation-settings: var(--fvs-base-light);
+  font-feature-settings: var(--ffs-base);
+  font-size: var(--font-size-text-base);
+  line-height: 1.5;
+  color: var(--color-dark);
+  background-color: var(--color-light);
+  text-wrap-style: balance;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (hover: hover) {
+  a,
+  button:enabled,
+  input[type="range"],
+  input[type="radio"],
+  input[type="checkbox"],
+  select {
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px dashed currentColor;
+      outline-offset: 2px;
+    }
+  }
+
+  .s-base a {
+    &:focus-visible {
+      border-radius: 0;
+    }
+  }
+}
