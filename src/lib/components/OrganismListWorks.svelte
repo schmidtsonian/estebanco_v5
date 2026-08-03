@@ -18,6 +18,19 @@
 	const isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 
 	let visibleIndex = $state(-1);
+	let loadingAssets = $state(new Set<string>());
+
+	function addLoadingAsset(assetKey: string) {
+		loadingAssets.add(assetKey);
+		// Auto-remove loading state after 8 seconds if still loading
+		setTimeout(() => {
+			loadingAssets.delete(assetKey);
+		}, 8000);
+	}
+
+	function removeLoadingAsset(assetKey: string) {
+		loadingAssets.delete(assetKey);
+	}
 </script>
 
 <div class={['o-list-works', { 'has-intro': isSplashCompleted }]}>
@@ -58,28 +71,50 @@
 					]}
 				>
 					{#each item.assets ?? [] as asset, assetIndex (`${item._uid}-${asset.id}-${assetIndex}`)}
+						{@const assetKey = `${item._uid}-${asset.id}-${assetIndex}`}
+						{@const isLoading = loadingAssets.has(assetKey)}
 						<div
 							class="o-list-works__assets-item"
 							in:fly|global={{ duration: 300, x: 100, delay: assetIndex * 100 }}
 							out:fade|global={{ duration: 100 }}
 						>
 							{#if asset.type === 'asset-image'}
-								<AtomStoryblokImage
-									src={asset.src}
-									width={1920}
-									height={1080}
-									focus={asset.focus}
-									class="o-list-works__assets-item__media"
-								/>
+								<div class="o-list-works__assets-item__loader-wrapper">
+									<AtomStoryblokImage
+										src={asset.src}
+										width={Number(asset.width) || 1920}
+										height={Number(asset.height) || 1080}
+										breakpoints={[]}
+										focus={asset.focus}
+										class="o-list-works__assets-item__media"
+										onload={() => removeLoadingAsset(assetKey)}
+										onerror={() => removeLoadingAsset(assetKey)}
+									/>
+									{#if isLoading}
+										<div class="o-list-works__assets-item__loader">
+											<span>loading ...</span>
+										</div>
+									{/if}
+								</div>
 							{:else if asset.type === 'asset'}
-								<video
-									src={asset.src}
-									autoplay
-									loop
-									muted
-									playsinline
-									class="o-list-works__assets-item__media"
-								></video>
+								<div class="o-list-works__assets-item__loader-wrapper">
+									<video
+										src={asset.src}
+										autoplay
+										loop
+										muted
+										playsinline
+										class="o-list-works__assets-item__media"
+										onloadstart={() => addLoadingAsset(assetKey)}
+										oncanplay={() => removeLoadingAsset(assetKey)}
+										onerror={() => removeLoadingAsset(assetKey)}
+									></video>
+									{#if isLoading}
+										<div class="o-list-works__assets-item__loader">
+											<span>loading ...</span>
+										</div>
+									{/if}
+								</div>
 							{/if}
 						</div>
 					{/each}
@@ -166,8 +201,9 @@
 		margin-left: auto;
 		flex-direction: column;
 		justify-content: center;
-		gap: 2rem;
-		padding: 2rem;
+		gap: 0.5rem;
+		right: -2rem;
+		// padding: 2rem;
 		pointer-events: none;
 	}
 
@@ -181,13 +217,36 @@
 		pointer-events: none;
 	}
 
+	.o-list-works__assets-item__loader-wrapper {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.o-list-works__assets-item__loader {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: rgba(0, 0, 0, 0.5);
+		border-radius: px-to-rem(8);
+		z-index: 2;
+		font-size: 1rem;
+		color: var(--color-light, #fff);
+		pointer-events: none;
+	}
+
 	.o-list-works__assets-item__media,
 	:global(.o-list-works__assets-item__media) {
-		border-radius: px-to-rem(8);
+		border-radius: px-to-rem(6);
 		overflow: hidden;
 		background-color: var(--color-dark);
 		width: 100%;
-		aspect-ratio: 16 / 9;
+		// aspect-ratio: 16 / 9;
 		object-fit: contain;
 		pointer-events: none;
 		z-index: 1;
@@ -198,9 +257,12 @@
 			width: 50%;
 		}
 	}
-	@media (min-width: 1900px) {
-		.o-list-works__assets--3 {
+	@media (min-width: 1700px) {
+		.o-list-works__assets--2 {
 			width: 40%;
+		}
+		.o-list-works__assets--3 {
+			width: 30%;
 		}
 	}
 	@media (min-width: 2200px) {
