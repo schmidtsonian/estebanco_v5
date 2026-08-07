@@ -46,7 +46,7 @@
 			span span {
 				transform: translateY(0%);
 			}
-			@for $i from 2 through 6 {
+			@for $i from 2 through 7 {
 				span:nth-child(#{$i}) span {
 					transition-delay: ($i - 1) * 0.06s; /* slightly tighter stagger for better flow */
 				}
