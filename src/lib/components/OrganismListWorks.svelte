@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
+	import { animate, JSAnimation, onScroll } from 'animejs';
+
 	import { fromStore } from 'svelte/store';
 	import { fade, fly } from 'svelte/transition';
 	import { layout } from '$lib/stores/layout';
@@ -14,40 +17,75 @@
 	};
 
 	let { items }: Props = $props();
-	const layoutValue = fromStore(layout);
-	const isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
-
+	let elButtons: HTMLElement[] = $state([]);
+	let animateInstances: JSAnimation[] = $state([]);
+	let layoutValue = fromStore(layout);
+	let isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 	let visibleIndex = $state(-1);
 	let loadingAssets = $state(new Set<string>());
+	const loadingTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
+	let splashTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	function addLoadingAsset(assetKey: string) {
+	const addLoadingAsset = (assetKey: string) => {
 		loadingAssets.add(assetKey);
-		// Auto-remove loading state after 8 seconds if still loading
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
 			loadingAssets.delete(assetKey);
+			delete loadingTimeouts[assetKey];
 		}, 8000);
-	}
+		loadingTimeouts[assetKey] = timeout;
+	};
 
-	function removeLoadingAsset(assetKey: string) {
+	const removeLoadingAsset = (assetKey: string) => {
 		loadingAssets.delete(assetKey);
-	}
+		if (loadingTimeouts[assetKey]) {
+			clearTimeout(loadingTimeouts[assetKey]);
+			delete loadingTimeouts[assetKey];
+		}
+	};
+
+	$effect(() => {
+		if (isSplashCompleted) {
+			splashTimeout = setTimeout(() => {
+				initializeAnimations();
+			}, 500);
+		}
+	});
+
+	const initializeAnimations = () => {
+		elButtons.forEach((button) => {
+			animateInstances.push(
+				animate(button, {
+					autoplay: onScroll({
+						enter: 'center top',
+						leave: 'center bottom',
+						sync: true,
+						onEnter: () => {
+							visibleIndex = elButtons.indexOf(button);
+						}
+					})
+				})
+			);
+		});
+	};
+	onDestroy(() => {
+		if (splashTimeout) clearTimeout(splashTimeout);
+		Object.values(loadingTimeouts).forEach((timeout) => clearTimeout(timeout));
+		animateInstances.forEach((instance) => instance.pause());
+	});
 </script>
 
-<div class={['o-list-works', { 'has-intro': isSplashCompleted }]}>
+<div class="o-list-works" class:has-intro={isSplashCompleted}>
 	{#if items.length === 0}
 		<p>No items found.</p>
 	{:else}
 		<ul class="o-list-works__list">
 			{#each items as item, index (`${item._uid}-${index}`)}
 				<li class="o-list-works__item">
-					<button
-						class={[
-							'o-list-works__item-button',
-							{ 'is-active': visibleIndex === index },
-							{ 'is-idle': visibleIndex === -1 }
-						]}
+					<div
+						class="o-list-works__item-button"
+						class:is-active={visibleIndex === index}
 						style="--delay: {index * 0.05}s"
-						onmouseenter={() => (visibleIndex = index)}
+						bind:this={elButtons[index]}
 					>
 						<div class="o-list-works__item-content">
 							<h2 class="h-h1 o-list-works__item-title">
@@ -57,13 +95,13 @@
 								<p class="h-strong o-list-works__item-desc">{item.description}</p>
 							{/if}
 						</div>
-					</button>
+					</div>
 				</li>
 			{/each}
 		</ul>
 
 		{#each items as item, index (`${item._uid}-${index}`)}
-			{#if visibleIndex === index}
+			{#if visibleIndex === index && isSplashCompleted}
 				<aside
 					class={[
 						'o-list-works__assets',
@@ -84,6 +122,9 @@
 										src={asset.src}
 										width={Number(asset.width) || 1920}
 										height={Number(asset.height) || 1080}
+										style="aspect-ratio: {asset.width && asset.height
+											? `${asset.width} / ${asset.height}`
+											: '1920 / 1080'};"
 										breakpoints={[]}
 										focus={asset.focus}
 										class="o-list-works__assets-item__media"
@@ -128,6 +169,10 @@
 	@use '$lib/assets/styles/mixins' as *;
 	@use '$lib/assets/styles/functions' as *;
 	@use '$lib/assets/styles/scss-vars' as *;
+	.o-list-works {
+		padding-top: 75vh;
+		padding-bottom: 50vh;
+	}
 	.o-list-works__list {
 		position: relative;
 		z-index: 1;
@@ -142,9 +187,12 @@
 		width: 100%;
 		transform: translateY(200%);
 		transition-property: transform, opacity;
-		transition-duration: 0.75s;
+		transition-duration: 0.5s;
 		transition-timing-function: var(--ease-in-out-custom);
 		padding-block: 4rem;
+
+		opacity: 0.5;
+		transition-delay: 0.15s;
 	}
 	.o-list-works__item-arrow,
 	.o-list-works__item-title,
@@ -172,6 +220,8 @@
 	}
 
 	.o-list-works__item-button.is-active {
+		opacity: 1;
+		transition-delay: 0s !important;
 		.o-list-works__item-title,
 		.o-list-works__item-desc {
 			transform: translateX(10%);
@@ -185,12 +235,6 @@
 		.o-list-works__item-desc {
 			transition-delay: 0.1s;
 		}
-	}
-
-	.o-list-works__item-button:not(.is-active):not(.is-idle) {
-		opacity: 0.5;
-		transition-duration: 0.5s !important;
-		transition-delay: 0s !important;
 	}
 
 	.o-list-works__assets {
@@ -246,10 +290,14 @@
 		overflow: hidden;
 		background-color: var(--color-dark);
 		width: 100%;
-		// aspect-ratio: 16 / 9;
 		object-fit: contain;
 		pointer-events: none;
 		z-index: 1;
+	}
+
+	video.o-list-works__assets-item__media {
+		aspect-ratio: 16 / 9;
+		background-color: var(--color-light);
 	}
 
 	@media (min-width: 1024px) {

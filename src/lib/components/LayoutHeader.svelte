@@ -241,6 +241,8 @@
 		mix-blend-mode: difference;
 		isolation: isolate;
 		opacity: 0;
+
+		view-transition-name: none;
 	}
 
 	:global(.l-headers__logo) {

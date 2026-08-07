@@ -1,0 +1,39 @@
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    filter: blur(6px);
+  }
+}
+
+@keyframes slide-from-right {
+  from {
+    transform: translateX(30vw) rotate(2deg) scale(0.95);
+  }
+}
+
+@keyframes slide-to-left {
+  to {
+    transform: translateX(-30vw) rotate(-2deg) scale(0.95);
+  }
+}
+
+:root::view-transition-old(root) {
+  animation:
+    0.8s var(--ease-custom-in-out) both fade-out,
+    1.2s var(--ease-custom-in-out) both slide-to-left;
+  transform-origin: left center;
+}
+
+:root::view-transition-new(root) {
+  animation:
+    0.8s var(--ease-custom-in-out) 0.2s both fade-in,
+    1.2s var(--ease-custom-in-out) both slide-from-right;
+  transform-origin: left center;
+}

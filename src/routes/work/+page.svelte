@@ -65,6 +65,6 @@
 	@use '$lib/assets/styles/functions' as *;
 	@use '$lib/assets/styles/scss-vars' as *;
 	section {
-		margin-top: px-to-rem(100);
+		// margin-top: px-to-rem(100);
 	}
 </style>

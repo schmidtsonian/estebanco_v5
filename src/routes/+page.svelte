@@ -7,9 +7,14 @@
 </script>
 
 <section class={[{ 'has-intro': isSplashCompleted }]}>
-	<h2 class="h-h2">
+	<h2 class="h-strong">
 		<span><span>Este banco</span></span>
 		<span><span>está ocupado...</span></span>
+		<span><span>German-based „señor“... </span></span>
+		<span><span>Software engineer,</span></span>
+		<span><span>Software designer,</span></span>
+		<span><span>Frontend architect, </span></span>
+		<span><span>Creative technologist</span></span>
 	</h2>
 </section>
 
@@ -41,8 +46,10 @@
 			span span {
 				transform: translateY(0%);
 			}
-			span:nth-child(2) span {
-				transition-delay: 0.25s;
+			@for $i from 2 through 6 {
+				span:nth-child(#{$i}) span {
+					transition-delay: ($i - 1) * 0.06s; /* slightly tighter stagger for better flow */
+				}
 			}
 		}
 	}
