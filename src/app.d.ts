@@ -35,6 +35,13 @@ declare global {
 		scrollDirection: ScrollDirection;
 	}
 
+	interface Globals {
+		images?: AssetImage[];
+		enable_tracking: boolean;
+		umami_js_src?: string;
+		umami_website_id?: string;
+	}
+
 	namespace App {
 		// interface Error {}
 		// interface Locals {}

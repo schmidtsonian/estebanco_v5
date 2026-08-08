@@ -40,6 +40,10 @@
 	{#if story}
 		<section use:storyblokEditable={story.content}>
 			<OrganismListWorks
+				marqueeTop={(story.content as Work).marquee?.map((item) => ({
+					_uid: item._uid,
+					text: item.text ?? '-'
+				})) ?? []}
 				items={(story.content as Work).works.map((work) => ({
 					_uid: work._uid,
 					title: work.title,

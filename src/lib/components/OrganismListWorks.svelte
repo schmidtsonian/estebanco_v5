@@ -8,6 +8,7 @@
 	import AtomStoryblokImage from '$lib/components/AtomStoryblokImage.svelte';
 
 	type Props = {
+		marqueeTop: { _uid: string; text: string }[];
 		items: {
 			_uid: string;
 			title?: string;
@@ -16,15 +17,25 @@
 		}[];
 	};
 
-	let { items }: Props = $props();
+	let { items, marqueeTop }: Props = $props();
 	let elButtons: HTMLElement[] = $state([]);
+	let elMarqueeTop: HTMLElement | null = $state(null);
+	let elMarqueeTopContent: HTMLElement | null = $state(null);
+
 	let animateInstances: JSAnimation[] = $state([]);
 	let layoutValue = fromStore(layout);
-	let isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 	let visibleIndex = $state(-1);
 	let loadingAssets = $state(new Set<string>());
-	const loadingTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
+
+	let isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 	let splashTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	const loadingTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
+
+	const MARQUEE_REPEATS = 3;
+	const marqueeTopContent = $derived(
+		Array.from({ length: MARQUEE_REPEATS }, (_, i) => i).flatMap(() => marqueeTop)
+	);
 
 	const addLoadingAsset = (assetKey: string) => {
 		loadingAssets.add(assetKey);
@@ -52,6 +63,22 @@
 	});
 
 	const initializeAnimations = () => {
+		if (elMarqueeTop && elMarqueeTopContent) {
+			const maxScroll = elMarqueeTopContent.scrollWidth - elMarqueeTop.clientWidth;
+
+			animateInstances.push(
+				animate(elMarqueeTop, {
+					scrollLeft: [0, maxScroll],
+					duration: 0,
+					autoplay: onScroll({
+						enter: 'max bottom',
+						leave: 'min bottom',
+						sync: 1
+					})
+				})
+			);
+		}
+
 		elButtons.forEach((button) => {
 			animateInstances.push(
 				animate(button, {
@@ -61,6 +88,11 @@
 						sync: true,
 						onEnter: () => {
 							visibleIndex = elButtons.indexOf(button);
+						},
+						onLeave: () => {
+							if (visibleIndex === elButtons.indexOf(button)) {
+								visibleIndex = -1;
+							}
 						}
 					})
 				})
@@ -75,6 +107,18 @@
 </script>
 
 <div class="o-list-works" class:has-intro={isSplashCompleted}>
+	{#if marqueeTop && marqueeTop.length > 0}
+		<div class="o-list-works__intro h-strong" bind:this={elMarqueeTop}>
+			<div class="o-list-works__intro__content" bind:this={elMarqueeTopContent}>
+				{#each marqueeTopContent as item, index (index)}
+					<span>{item.text}</span>
+					{#if index < marqueeTopContent.length - 1}
+						<span class="symbol">▲</span>
+					{/if}
+				{/each}
+			</div>
+		</div>
+	{/if}
 	{#if items.length === 0}
 		<p>No items found.</p>
 	{:else}
@@ -170,12 +214,45 @@
 	@use '$lib/assets/styles/functions' as *;
 	@use '$lib/assets/styles/scss-vars' as *;
 	.o-list-works {
-		padding-top: 75vh;
-		padding-bottom: 50vh;
+		padding-top: 50vh;
+	}
+	.o-list-works__intro {
+		overflow-x: auto;
+		overflow-y: hidden;
+		width: 100%;
+		display: flex;
+		scroll-behavior: auto;
+		padding-bottom: px-to-rem(200);
+		transform: rotate(-4deg);
+
+		/* Hide scrollbar */
+		scrollbar-width: none;
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+	.o-list-works__intro__content {
+		display: flex;
+		align-items: center;
+		gap: px-to-rem(30);
+		will-change: transform;
+		white-space: nowrap;
+		flex-shrink: 0;
+
+		span {
+			display: inline-block;
+			flex-shrink: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		.symbol {
+			font-size: 0.35em;
+		}
 	}
 	.o-list-works__list {
 		position: relative;
 		z-index: 1;
+		padding-bottom: 50vh;
 	}
 	.o-list-works__item {
 		overflow: hidden;
@@ -194,6 +271,7 @@
 		opacity: 0.5;
 		transition-delay: 0.15s;
 	}
+	.o-list-works__intro,
 	.o-list-works__item-arrow,
 	.o-list-works__item-title,
 	.o-list-works__item-desc {
@@ -208,11 +286,18 @@
 		transform: translateX(-100%);
 	}
 
+	.o-list-works__intro {
+		transform: rotate(-4deg) translateX(-100%);
+	}
+
 	.o-list-works__item-desc {
 		padding-left: 1rem;
 	}
 
 	.has-intro {
+		.o-list-works__intro {
+			transform: rotate(-4deg) translateX(0%);
+		}
 		.o-list-works__item-button {
 			transition-delay: var(--delay) 0s;
 			transform: translateY(0%);

@@ -9,15 +9,27 @@ export interface Image {
 }
 
 export interface Page {
-  body?: (Image | Page | Settings | Video | Work | WorkDetail)[];
+  body?: (Image | Page | Settings | Text | Video | Work | WorkDetail)[];
   component: "page";
   _uid: string;
   [k: string]: any;
 }
 
 export interface Settings {
+  group_splash_screen?: any;
   images?: Image[];
+  group_tracking?: any;
+  enable_tracking?: boolean;
+  umami_js_src?: string;
+  umami_website_id?: string;
   component: "settings";
+  _uid: string;
+  [k: string]: any;
+}
+
+export interface Text {
+  text?: string;
+  component: "text";
   _uid: string;
   [k: string]: any;
 }
@@ -30,6 +42,7 @@ export interface Video {
 }
 
 export interface Work {
+  marquee?: Text[];
   works: WorkDetail[];
   component: "work";
   _uid: string;

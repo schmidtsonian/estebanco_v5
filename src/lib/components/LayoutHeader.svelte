@@ -192,6 +192,9 @@
 	@use '$lib/assets/styles/functions' as *;
 	@use '$lib/assets/styles/scss-vars' as *;
 
+	.l-splash {
+		z-index: var(--z-index-splash);
+	}
 	.l-splash,
 	.l-splash__images,
 	.l-splash__image,
@@ -241,6 +244,7 @@
 		mix-blend-mode: difference;
 		isolation: isolate;
 		opacity: 0;
+		z-index: var(--z-index-header);
 
 		view-transition-name: none;
 	}

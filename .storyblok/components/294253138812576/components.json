@@ -68,12 +68,21 @@
     "display_name": null,
     "description": "",
     "created_at": "2026-08-01T18:28:56.963Z",
-    "updated_at": "2026-08-02T13:29:44.322Z",
+    "updated_at": "2026-08-08T13:22:07.328Z",
     "id": 204469604201036,
     "schema": {
+      "group_splash_screen": {
+        "type": "section",
+        "pos": 0,
+        "display_name": "Splash Screen Images",
+        "keys": [
+          "images"
+        ],
+        "id": "B0UOuav_TQe_T6Lfbg50sQ"
+      },
       "images": {
         "type": "bloks",
-        "pos": 0,
+        "pos": 1,
         "id": "4Ek7cghFSxibyq6KxE85Xg",
         "minimum": 1,
         "restrict_type": "",
@@ -81,7 +90,35 @@
         "component_whitelist": [
           "image"
         ],
-        "component_denylist": []
+        "component_denylist": [],
+        "display_name": "Images"
+      },
+      "group_tracking": {
+        "type": "section",
+        "pos": 2,
+        "keys": [
+          "enable_tracking",
+          "umami_js_src",
+          "imami_website_id",
+          "umami_website_id"
+        ],
+        "id": "UqneXrfnTHuN9ENpT7Dr2g",
+        "display_name": "Tracking"
+      },
+      "enable_tracking": {
+        "type": "boolean",
+        "pos": 3,
+        "id": "IHQu14XLTnqwgKa5BoscSA"
+      },
+      "umami_js_src": {
+        "type": "text",
+        "pos": 4,
+        "id": "s7g2EXn5QFC-VfijjE0aOg"
+      },
+      "umami_website_id": {
+        "type": "text",
+        "pos": 5,
+        "id": "8ABNbOkZRySjY0R2PxDzRw"
       }
     },
     "image": null,
@@ -92,6 +129,36 @@
     "all_presets": [],
     "preset_id": null,
     "real_name": "settings",
+    "component_group_uuid": null,
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "text",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-08-08T17:39:46.623Z",
+    "updated_at": "2026-08-08T17:40:05.976Z",
+    "id": 206934780412041,
+    "schema": {
+      "text": {
+        "type": "text",
+        "pos": 0,
+        "id": "mArG0yfOSLukQQ7CtK8jRw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "text",
     "component_group_uuid": null,
     "color": null,
     "icon": null,
@@ -139,12 +206,23 @@
     "display_name": null,
     "description": "",
     "created_at": "2026-08-02T13:26:17.139Z",
-    "updated_at": "2026-08-02T13:29:31.354Z",
+    "updated_at": "2026-08-08T17:40:44.560Z",
     "id": 204749115967173,
     "schema": {
-      "works": {
+      "marquee": {
         "type": "bloks",
         "pos": 0,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "text"
+        ],
+        "component_denylist": [],
+        "id": "DtmbrLjSS02IMtyHXQlvSA"
+      },
+      "works": {
+        "type": "bloks",
+        "pos": 1,
         "id": "f6m7aHjKQx-cAediacfwCw",
         "required": true,
         "restrict_type": "",
