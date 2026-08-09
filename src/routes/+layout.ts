@@ -1,5 +1,6 @@
 import type { LayoutLoad } from './$types';
 import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
 import { apiPlugin, storyblokInit } from '@storyblok/svelte';
 import { PUBLIC_STORYBLOK_ACCESS_TOKEN, PUBLIC_ENV_HOST } from '$env/static/public';
@@ -11,6 +12,7 @@ export const trailingSlash = 'never';
 
 export const load: LayoutLoad = async ({ data }) => {
 	injectSpeedInsights();
+	injectAnalytics({ mode: PUBLIC_ENV_HOST === 'development' ? 'development' : 'production' });
 
 	setStoryblokCv(data.storyblokCv);
 	setGlobals(data.settings || null);

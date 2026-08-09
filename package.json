@@ -9,6 +9,7 @@
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/node": "^22",
 		"@unpic/svelte": "^1.0.1",
+		"@vercel/analytics": "^2.0.1",
 		"@vercel/speed-insights": "^2.0.0",
 		"animejs": "^4.5.0",
 		"eslint": "^10.4.1",
