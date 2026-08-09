@@ -4,11 +4,12 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@storyblok/svelte": "^7.2.3",
+		"@sveltejs/adapter-vercel": "^6.3.4",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/node": "^22",
 		"@unpic/svelte": "^1.0.1",
-		"@sveltejs/adapter-vercel": "^6.3.4",
+		"@vercel/speed-insights": "^2.0.0",
 		"animejs": "^4.5.0",
 		"eslint": "^10.4.1",
 		"eslint-config-prettier": "^10.1.8",
