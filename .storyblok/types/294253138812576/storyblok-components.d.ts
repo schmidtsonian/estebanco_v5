@@ -8,9 +8,23 @@ export interface Image {
   [k: string]: any;
 }
 
+export interface Llms {
+  content?: string;
+  component: "llms";
+  _uid: string;
+  [k: string]: any;
+}
+
 export interface Page {
-  body?: (Image | Page | Settings | Text | Video | Work | WorkDetail)[];
+  body?: (Image | Llms | Page | Robots | Settings | Text | Video | Work | WorkDetail)[];
   component: "page";
+  _uid: string;
+  [k: string]: any;
+}
+
+export interface Robots {
+  content?: string;
+  component: "robots";
   _uid: string;
   [k: string]: any;
 }
@@ -58,4 +72,4 @@ export interface WorkDetail {
   [k: string]: any;
 }
 
-export type ContentType = Page | Settings | Work;
+export type ContentType = Llms | Page | Robots | Settings | Work;
