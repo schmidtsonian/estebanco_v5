@@ -3,7 +3,7 @@
 	import { animate, JSAnimation, onScroll } from 'animejs';
 
 	import { fromStore } from 'svelte/store';
-	import { fade, fly } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import { layout } from '$lib/stores/layout';
 	import AtomStoryblokImage from '$lib/components/AtomStoryblokImage.svelte';
 
@@ -24,11 +24,20 @@
 
 	let animateInstances: JSAnimation[] = $state([]);
 	let layoutValue = fromStore(layout);
-	let visibleIndex = $state(-1);
 	let loadingAssets = $state(new Set<string>());
 
 	let isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 	let splashTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	let assetsContainerRotation = $derived(0);
+	let activeItem = $state(-1);
+	let activeAssetIndices = $state<Record<number, number>>({});
+
+	let itemsAssetsActive: { total: number; indexActive: number }[] = $derived.by(() => {
+		return items.map((item, index) => {
+			return { total: item.assets?.length ?? 0, indexActive: activeAssetIndices[index] ?? 0 };
+		});
+	});
 
 	const loadingTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
 
@@ -53,14 +62,6 @@
 			delete loadingTimeouts[assetKey];
 		}
 	};
-
-	$effect(() => {
-		if (isSplashCompleted) {
-			splashTimeout = setTimeout(() => {
-				initializeAnimations();
-			}, 500);
-		}
-	});
 
 	const initializeAnimations = () => {
 		if (elMarqueeTop && elMarqueeTopContent) {
@@ -87,11 +88,12 @@
 						leave: 'center bottom',
 						sync: true,
 						onEnter: () => {
-							visibleIndex = elButtons.indexOf(button);
+							activeItem = elButtons.indexOf(button);
+							rotateAssets();
 						},
 						onLeave: () => {
-							if (visibleIndex === elButtons.indexOf(button)) {
-								visibleIndex = -1;
+							if (activeItem === elButtons.indexOf(button)) {
+								activeItem = -1;
 							}
 						}
 					})
@@ -99,6 +101,33 @@
 			);
 		});
 	};
+
+	const handlerProjectClick = (index: number) => {
+		elButtons[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		if (itemsAssetsActive[index].total <= 1) return;
+
+		const current = activeAssetIndices[index] ?? 0;
+		if (current >= itemsAssetsActive[index].total - 1) {
+			activeAssetIndices[index] = 0;
+		} else {
+			activeAssetIndices[index] = current + 1;
+		}
+
+		rotateAssets();
+	};
+
+	const rotateAssets = () => {
+		assetsContainerRotation = assetsContainerRotation === 2 ? -2 : 2;
+	};
+
+	$effect(() => {
+		if (isSplashCompleted) {
+			splashTimeout = setTimeout(() => {
+				initializeAnimations();
+			}, 500);
+		}
+	});
+
 	onDestroy(() => {
 		if (splashTimeout) clearTimeout(splashTimeout);
 		Object.values(loadingTimeouts).forEach((timeout) => clearTimeout(timeout));
@@ -125,10 +154,11 @@
 		<ul class="o-list-works__list">
 			{#each items as item, index (`${item._uid}-${index}`)}
 				<li class="o-list-works__item">
-					<div
+					<button
 						class="o-list-works__item-button"
-						class:is-active={visibleIndex === index}
+						class:is-active={activeItem === index}
 						style="--delay: {index * 0.05}s"
+						onclick={() => handlerProjectClick(index)}
 						bind:this={elButtons[index]}
 					>
 						<div class="o-list-works__item-content">
@@ -139,73 +169,87 @@
 								<p class="h-strong o-list-works__item-desc">{item.description}</p>
 							{/if}
 						</div>
-					</div>
+					</button>
 				</li>
 			{/each}
 		</ul>
 
-		{#each items as item, index (`${item._uid}-${index}`)}
-			{#if visibleIndex === index && isSplashCompleted}
-				<aside
-					class={[
-						'o-list-works__assets',
-						`o-list-works__assets--${item.assets ? item.assets.length : 0}`
-					]}
-				>
-					{#each item.assets ?? [] as asset, assetIndex (`${item._uid}-${asset.id}-${assetIndex}`)}
-						{@const assetKey = `${item._uid}-${asset.id}-${assetIndex}`}
-						{@const isLoading = loadingAssets.has(assetKey)}
-						<div
-							class="o-list-works__assets-item"
-							in:fly|global={{ duration: 300, x: 100, delay: assetIndex * 100 }}
-							out:fade|global={{ duration: 100 }}
-						>
-							{#if asset.type === 'asset-image'}
-								<div class="o-list-works__assets-item__loader-wrapper">
-									<AtomStoryblokImage
-										src={asset.src}
-										width={Number(asset.width) || 1920}
-										height={Number(asset.height) || 1080}
-										style="aspect-ratio: {asset.width && asset.height
-											? `${asset.width} / ${asset.height}`
-											: '1920 / 1080'};"
-										breakpoints={[]}
-										focus={asset.focus}
-										class="o-list-works__assets-item__media"
-										onload={() => removeLoadingAsset(assetKey)}
-										onerror={() => removeLoadingAsset(assetKey)}
-									/>
-									{#if isLoading}
-										<div class="o-list-works__assets-item__loader">
-											<span>loading ...</span>
+		{#if activeItem !== -1}
+			<aside
+				class="o-list-works__assets"
+				in:scale|global={{ duration: 150, start: 0.94, opacity: 0 }}
+				out:scale|global={{ duration: 150, start: 0.94, opacity: 0 }}
+				style="--rotation: {assetsContainerRotation}deg"
+			>
+				{#each items as item, index (`${item._uid}-${index}`)}
+					{#if activeItem === index}
+						{#each item.assets ?? [] as asset, assetIndex (`${item._uid}-${asset.id}-${assetIndex}`)}
+							{#if itemsAssetsActive[index].indexActive == assetIndex}
+								{@const assetKey = `${item._uid}-${asset.id}-${assetIndex}`}
+								{@const isLoading = loadingAssets.has(assetKey)}
+								<div
+									class="o-list-works__assets-item"
+									in:scale|global={{ duration: 500, start: 0.94, opacity: 1 }}
+								>
+									{#if asset.type === 'asset-image'}
+										<div class="o-list-works__assets-item__loader-wrapper">
+											<AtomStoryblokImage
+												src={asset.src}
+												width={Number(asset.width) || 1920}
+												height={Number(asset.height) || 1080}
+												style="aspect-ratio: {asset.width && asset.height
+													? `${asset.width} / ${asset.height}`
+													: '1920 / 1080'};"
+												breakpoints={[]}
+												focus={asset.focus}
+												class="o-list-works__assets-item__media"
+												onload={() => removeLoadingAsset(assetKey)}
+												onerror={() => removeLoadingAsset(assetKey)}
+											/>
+											{#if isLoading}
+												<div class="o-list-works__assets-item__loader">
+													<span>loading ...</span>
+												</div>
+											{/if}
 										</div>
-									{/if}
-								</div>
-							{:else if asset.type === 'asset'}
-								<div class="o-list-works__assets-item__loader-wrapper">
-									<video
-										src={asset.src}
-										autoplay
-										loop
-										muted
-										playsinline
-										class="o-list-works__assets-item__media"
-										onloadstart={() => addLoadingAsset(assetKey)}
-										oncanplay={() => removeLoadingAsset(assetKey)}
-										onerror={() => removeLoadingAsset(assetKey)}
-									></video>
-									{#if isLoading}
-										<div class="o-list-works__assets-item__loader">
-											<span>loading ...</span>
+									{:else if asset.type === 'asset'}
+										<div class="o-list-works__assets-item__loader-wrapper">
+											<video
+												src={asset.src}
+												autoplay
+												loop
+												muted
+												playsinline
+												class="o-list-works__assets-item__media"
+												onloadstart={() => addLoadingAsset(assetKey)}
+												oncanplay={() => removeLoadingAsset(assetKey)}
+												onerror={() => removeLoadingAsset(assetKey)}
+											></video>
+											{#if isLoading}
+												<div class="o-list-works__assets-item__loader">
+													<span>loading ...</span>
+												</div>
+											{/if}
 										</div>
 									{/if}
 								</div>
 							{/if}
-						</div>
-					{/each}
-				</aside>
-			{/if}
-		{/each}
+						{/each}
+
+						{#if itemsAssetsActive[index].total > 1}
+							<div class="o-list-works__assets-counter">
+								{itemsAssetsActive[index].indexActive + 1}
+								/
+								{itemsAssetsActive[index].total}
+								({item.assets?.[itemsAssetsActive[index].indexActive]?.type === 'asset-image'
+									? 'image'
+									: 'video'})
+							</div>
+						{/if}
+					{/if}
+				{/each}
+			</aside>
+		{/if}
 	{/if}
 </div>
 
@@ -331,9 +375,22 @@
 		flex-direction: column;
 		justify-content: center;
 		gap: 0.5rem;
-		right: -2rem;
-		// padding: 2rem;
+		right: 5%;
+		transform: rotate(var(--rotation, 0deg));
+		transform-origin: center right;
+		transition: transform 0.5s var(--ease-in-out-custom);
+
 		pointer-events: none;
+	}
+
+	.o-list-works__assets-counter {
+		text-align: center;
+		position: absolute;
+		z-index: 1;
+		bottom: 5vh;
+		display: block;
+		text-align: center;
+		width: 100%;
 	}
 
 	.o-list-works__assets-item {
@@ -344,10 +401,13 @@
 		max-width: 100%;
 		max-height: 100%;
 		pointer-events: none;
+		position: absolute;
+		top: 0;
+		left: 0;
 	}
 
 	.o-list-works__assets-item__loader-wrapper {
-		position: relative;
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -361,17 +421,14 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		background-color: rgba(0, 0, 0, 0.5);
-		border-radius: px-to-rem(8);
 		z-index: 2;
-		font-size: 1rem;
 		color: var(--color-light, #fff);
 		pointer-events: none;
 	}
 
 	.o-list-works__assets-item__media,
 	:global(.o-list-works__assets-item__media) {
-		border-radius: px-to-rem(6);
+		border-radius: px-to-rem(10);
 		overflow: hidden;
 		background-color: var(--color-dark);
 		width: 100%;
@@ -382,37 +439,12 @@
 
 	video.o-list-works__assets-item__media {
 		aspect-ratio: 16 / 9;
-		background-color: var(--color-light);
+		border-radius: px-to-rem(10);
 	}
 
 	@media (min-width: 1024px) {
 		.o-list-works__item-content {
 			width: 50%;
-		}
-	}
-	@media (min-width: 1700px) {
-		.o-list-works__assets--2 {
-			width: 40%;
-		}
-		.o-list-works__assets--3 {
-			width: 30%;
-		}
-	}
-	@media (min-width: 2200px) {
-		.o-list-works__assets--2 {
-			width: 35%;
-		}
-		.o-list-works__assets--3 {
-			width: 30%;
-		}
-	}
-
-	@media (min-width: 2600px) {
-		.o-list-works__assets--2 {
-			width: 30%;
-		}
-		.o-list-works__assets--3 {
-			width: 20%;
 		}
 	}
 </style>
