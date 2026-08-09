@@ -3,7 +3,7 @@
 	import { animate, JSAnimation, onScroll } from 'animejs';
 
 	import { fromStore } from 'svelte/store';
-	import { scale } from 'svelte/transition';
+	import { scale, blur } from 'svelte/transition';
 	import { layout } from '$lib/stores/layout';
 	import AtomStoryblokImage from '$lib/components/AtomStoryblokImage.svelte';
 
@@ -29,7 +29,7 @@
 	let isSplashCompleted = $derived(layoutValue.current.splash.isCompleted);
 	let splashTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	let assetsContainerRotation = $derived(0);
+	let assetsContainerRotation = $derived(2);
 	let activeItem = $state(-1);
 	let activeAssetIndices = $state<Record<number, number>>({});
 
@@ -80,26 +80,26 @@
 			);
 		}
 
-		elButtons.forEach((button) => {
-			animateInstances.push(
-				animate(button, {
-					autoplay: onScroll({
-						enter: 'center top',
-						leave: 'center bottom',
-						sync: true,
-						onEnter: () => {
-							activeItem = elButtons.indexOf(button);
-							rotateAssets();
-						},
-						onLeave: () => {
-							if (activeItem === elButtons.indexOf(button)) {
-								activeItem = -1;
-							}
-						}
-					})
-				})
-			);
-		});
+		// elButtons.forEach((button) => {
+		// 	animateInstances.push(
+		// 		animate(button, {
+		// 			autoplay: onScroll({
+		// 				enter: 'center top',
+		// 				leave: 'center bottom',
+		// 				sync: true,
+		// 				onEnter: () => {
+		// 					activeItem = elButtons.indexOf(button);
+		// 					rotateAssets();
+		// 				},
+		// 				onLeave: () => {
+		// 					if (activeItem === elButtons.indexOf(button)) {
+		// 						activeItem = -1;
+		// 					}
+		// 				}
+		// 			})
+		// 		})
+		// 	);
+		// });
 	};
 
 	const handlerProjectClick = (index: number) => {
@@ -116,8 +116,16 @@
 		rotateAssets();
 	};
 
+	const handlerProjectMouseenter = (index: number) => {
+		activeItem = index;
+	};
+
+	const handlerProjectMouseleave = () => {
+		activeItem = -1;
+	};
+
 	const rotateAssets = () => {
-		assetsContainerRotation = assetsContainerRotation === 2 ? -2 : 2;
+		assetsContainerRotation = Math.random() * 4 - 2;
 	};
 
 	$effect(() => {
@@ -151,7 +159,7 @@
 	{#if items.length === 0}
 		<p>No items found.</p>
 	{:else}
-		<ul class="o-list-works__list">
+		<ul class="o-list-works__list" onmouseleave={handlerProjectMouseleave}>
 			{#each items as item, index (`${item._uid}-${index}`)}
 				<li class="o-list-works__item">
 					<button
@@ -160,13 +168,34 @@
 						style="--delay: {index * 0.05}s"
 						onclick={() => handlerProjectClick(index)}
 						bind:this={elButtons[index]}
+						onmouseenter={() => handlerProjectMouseenter(index)}
 					>
 						<div class="o-list-works__item-content">
 							<h2 class="h-h1 o-list-works__item-title">
 								<span class="o-list-works__item-arrow">→</span>{item.title}
 							</h2>
 							{#if item.description}
-								<p class="h-strong o-list-works__item-desc">{item.description}</p>
+								<div class="o-list-works__item-desc">
+									<p class="h-strong">{item.description}</p>
+									{#if itemsAssetsActive[index].total > 0}
+										<div class="o-list-works__assets-counter">
+											<span>
+												{itemsAssetsActive[index].indexActive + 1}
+												of
+												{itemsAssetsActive[index].total}
+
+												{#if item.assets?.[itemsAssetsActive[index].indexActive]?.type === 'asset' && activeItem === index}
+													<span
+														in:blur|global={{ duration: 250 }}
+														out:blur|global={{ duration: 250 }}
+													>
+														: playing video
+													</span>
+												{/if}
+											</span>
+										</div>
+									{/if}
+								</div>
 							{/if}
 						</div>
 					</button>
@@ -179,7 +208,6 @@
 				class="o-list-works__assets"
 				in:scale|global={{ duration: 150, start: 0.94, opacity: 0 }}
 				out:scale|global={{ duration: 150, start: 0.94, opacity: 0 }}
-				style="--rotation: {assetsContainerRotation}deg"
 			>
 				{#each items as item, index (`${item._uid}-${index}`)}
 					{#if activeItem === index}
@@ -190,6 +218,7 @@
 								<div
 									class="o-list-works__assets-item"
 									in:scale|global={{ duration: 500, start: 0.94, opacity: 1 }}
+									style="--rotation: {assetsContainerRotation}deg"
 								>
 									{#if asset.type === 'asset-image'}
 										<div class="o-list-works__assets-item__loader-wrapper">
@@ -235,17 +264,6 @@
 								</div>
 							{/if}
 						{/each}
-
-						{#if itemsAssetsActive[index].total > 1}
-							<div class="o-list-works__assets-counter">
-								{itemsAssetsActive[index].indexActive + 1}
-								/
-								{itemsAssetsActive[index].total}
-								({item.assets?.[itemsAssetsActive[index].indexActive]?.type === 'asset-image'
-									? 'image'
-									: 'video'})
-							</div>
-						{/if}
 					{/if}
 				{/each}
 			</aside>
@@ -259,6 +277,7 @@
 	@use '$lib/assets/styles/scss-vars' as *;
 	.o-list-works {
 		padding-top: 50vh;
+		overflow-x: hidden;
 	}
 	.o-list-works__intro {
 		overflow-x: auto;
@@ -295,8 +314,11 @@
 	}
 	.o-list-works__list {
 		position: relative;
-		z-index: 1;
+		z-index: 10;
 		padding-bottom: 50vh;
+		mix-blend-mode: difference;
+		isolation: isolate;
+		color: var(--color-light);
 	}
 	.o-list-works__item {
 		overflow: hidden;
@@ -376,21 +398,8 @@
 		justify-content: center;
 		gap: 0.5rem;
 		right: 5%;
-		transform: rotate(var(--rotation, 0deg));
-		transform-origin: center right;
-		transition: transform 0.5s var(--ease-in-out-custom);
-
 		pointer-events: none;
-	}
-
-	.o-list-works__assets-counter {
-		text-align: center;
-		position: absolute;
 		z-index: 1;
-		bottom: 5vh;
-		display: block;
-		text-align: center;
-		width: 100%;
 	}
 
 	.o-list-works__assets-item {
@@ -404,6 +413,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+		transform: rotate(var(--rotation, 0deg));
 	}
 
 	.o-list-works__assets-item__loader-wrapper {
@@ -422,7 +432,7 @@
 		justify-content: center;
 		align-items: center;
 		z-index: 2;
-		color: var(--color-light, #fff);
+		color: var(--color-light);
 		pointer-events: none;
 	}
 
@@ -434,7 +444,7 @@
 		width: 100%;
 		object-fit: contain;
 		pointer-events: none;
-		z-index: 1;
+		// z-index: 1;
 	}
 
 	video.o-list-works__assets-item__media {
