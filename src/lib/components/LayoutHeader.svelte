@@ -174,6 +174,7 @@
 <header class="l-headers" bind:this={elHeader}>
 	<a
 		href={resolve('/')}
+		data-umami-event="Go Home"
 		class={[
 			'l-headers__logo-link',
 			{

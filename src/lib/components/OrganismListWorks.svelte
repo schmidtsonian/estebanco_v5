@@ -168,6 +168,9 @@
 						style="--delay: {index * 0.05}s"
 						onclick={() => handlerProjectClick(index)}
 						bind:this={elButtons[index]}
+						data-umami-event="Click Project"
+						data-umami-event-name={item.title}
+						data-umami-event-asset={itemsAssetsActive[index].indexActive}
 						onmouseenter={() => handlerProjectMouseenter(index)}
 					>
 						<div class="o-list-works__item-content">
